@@ -1,0 +1,28 @@
+[project]
+name = "fastapi-ecommerce"
+version = "0.1.0"
+description = "Production-ready E-Commerce REST API built with FastAPI"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "tanachod-int"}]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = [
+    "--strict-markers",
+    "--tb=short",
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+]
