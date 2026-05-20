@@ -1,5 +1,7 @@
 """Application settings loaded from environment variables."""
 
+from functools import lru_cache
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -37,4 +39,15 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 60
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:
+    """Return cached Settings instance.
+
+    Using lru_cache allows tests to override via dependency injection
+    without re-importing the module.
+    """
+    return Settings()
+
+
+# Module-level singleton used by non-DI code (database.py, alembic/env.py)
+settings = get_settings()

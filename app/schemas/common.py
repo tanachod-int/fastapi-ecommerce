@@ -1,9 +1,35 @@
 """Shared schemas used across the application."""
 
+from typing import Generic, TypeVar
+
 from pydantic import BaseModel, Field
 
+DataT = TypeVar("DataT")
 
-# ── Error Response ──────────────────────────────────────────────
+
+# ── Success Response
+
+
+class DataResponse(BaseModel, Generic[DataT]):
+    """Standard success response wrapper.
+
+    All successful responses are wrapped in a ``data`` key so clients
+    can distinguish between a resource object and a top-level envelope.
+
+    Example::
+
+        {
+            "data": {
+                "id": "abc-123",
+                "email": "alice@example.com"
+            }
+        }
+    """
+
+    data: DataT
+
+
+# ── Error Response
 
 
 class ErrorDetail(BaseModel):
@@ -17,7 +43,8 @@ class ErrorDetail(BaseModel):
 class ErrorResponse(BaseModel):
     """Standard error response returned by all error handlers.
 
-    Example:
+    Example::
+
         {
             "error": {
                 "code": "not_found",
@@ -38,7 +65,7 @@ class ErrorEnvelope(BaseModel):
     error: ErrorResponse
 
 
-# ── Pagination ──────────────────────────────────────────────────
+# ── Pagination
 
 
 class CursorPaginationParams(BaseModel):
@@ -55,7 +82,25 @@ class CursorPaginationMeta(BaseModel):
     next_cursor: str | None = None
 
 
-# ── Health Check ────────────────────────────────────────────────
+class PaginatedResponse(BaseModel, Generic[DataT]):
+    """Paginated collection response with cursor metadata.
+
+    Example::
+
+        {
+            "data": [...],
+            "meta": {
+                "has_next": true,
+                "next_cursor": "eyJpZCI6MTQzfQ"
+            }
+        }
+    """
+
+    data: list[DataT]
+    meta: CursorPaginationMeta
+
+
+# ── Health Check
 
 
 class HealthResponse(BaseModel):

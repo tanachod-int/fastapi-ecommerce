@@ -3,6 +3,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from app.api.v1.router import router as v1_router
 from app.config import settings
 from app.exceptions import (
     AppError,
@@ -26,11 +27,12 @@ def create_app() -> FastAPI:
 
     _register_exception_handlers(app)
     _register_routes(app)
+    app.include_router(v1_router)
 
     return app
 
 
-# ── Exception Handlers ──────────────────────────────────────────
+# ── Exception Handlers
 
 
 _EXCEPTION_STATUS_MAP: dict[type[AppError], tuple[int, str]] = {
@@ -71,7 +73,7 @@ def _register_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(status_code=500, content=body.model_dump())
 
 
-# ── Routes ──────────────────────────────────────────────────────
+# ── Routes
 
 
 def _register_routes(app: FastAPI) -> None:
@@ -86,6 +88,6 @@ def _register_routes(app: FastAPI) -> None:
         )
 
 
-# ── Application Instance ────────────────────────────────────────
+# ── Application Instance
 
 app = create_app()
